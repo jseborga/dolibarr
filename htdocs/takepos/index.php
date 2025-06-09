@@ -1023,7 +1023,12 @@ function CloseCashFence(rowid)
 
 function CashReport(rowid)
 {
-	$.colorbox({href:"../compta/cashcontrol/report.php?id="+rowid+"&contextpage=takepos", width:"60%", height:"90%", transition:"none", iframe:"true", title:"<?php echo $langs->trans("CashReport"); ?>"});
+        $.colorbox({href:"../compta/cashcontrol/report.php?id="+rowid+"&contextpage=takepos", width:"60%", height:"90%", transition:"none", iframe:"true", title:"<?php echo $langs->trans("CashReport"); ?>"});
+}
+
+function PendingOrders()
+{
+        $.colorbox({href:"pendingorders.php", width:"90%", height:"90%", transition:"none", iframe:"true", title:"<?php echo $langs->trans('PendingOrders'); ?>"});
 }
 
 // TakePOS Popup
@@ -1458,14 +1463,20 @@ $sql .= " AND status = 0";
 
 $resql = $db->query($sql);
 if ($resql) {
-	$num = $db->num_rows($resql);
-	if ($num) {
-		$obj = $db->fetch_object($resql);
-		$menus[$r++] = array('title' => '<span class="fas fa-file-invoice-dollar paddingrightonly"></span><div class="trunc">'.$langs->trans("CashReport").'</div>', 'action' => 'CashReport('.$obj->rowid.');');
-		if ($obj->status == 0) {
-			$menus[$r++] = array('title' => '<span class="fas fa-cash-register paddingrightonly"></span><div class="trunc">'.$langs->trans("CloseCashFence").'</div>', 'action' => 'CloseCashFence('.$obj->rowid.');');
-		}
-	}
+        $num = $db->num_rows($resql);
+        if ($num) {
+                $obj = $db->fetch_object($resql);
+                $menus[$r++] = array('title' => '<span class="fas fa-file-invoice-dollar paddingrightonly"></span><div class="trunc">'.$langs->trans("CashReport").'</div>', 'action' => 'CashReport('.$obj->rowid.');');
+                if ($obj->status == 0) {
+                        $menus[$r++] = array('title' => '<span class="fas fa-cash-register paddingrightonly"></span><div class="trunc">'.$langs->trans("CloseCashFence").'</div>', 'action' => 'CloseCashFence('.$obj->rowid.');');
+                }
+        } else {
+                $menus[$r++] = array('title' => '<span class="fas fa-cash-register paddingrightonly"></span><div class="trunc">'.$langs->trans("OpenCashFence").'</div>', 'action' => 'ControlCashOpening();');
+        }
+}
+
+if (getDolGlobalInt('TAKEPOS_AUTO_ORDER')) {
+        $menus[$r++] = array('title' => '<span class="fa fa-list paddingrightonly"></span><div class="trunc">'.$langs->trans("PendingOrders").'</div>', 'action' => 'PendingOrders();');
 }
 
 $parameters = array('menus' => $menus);
