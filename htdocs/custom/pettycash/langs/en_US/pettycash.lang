@@ -1,0 +1,45 @@
+# Translation file
+
+#
+# Generic
+#
+
+# Module label 'ModulePettyCashName'
+ModulePettyCashName = PettyCash
+# Module description 'ModulePettyCashDesc'
+ModulePettyCashDesc = PettyCash description
+
+#
+# Admin page
+#
+PettyCashSetup = PettyCash setup
+Settings = Settings
+PettyCashSetupPage = PettyCash setup page
+NewSection=New section
+MODPETTYCASH_MYPARAM1 = My param 1
+MODPETTYCASH_MYPARAM1Tooltip = My param 1 tooltip
+MODPETTYCASH_MYPARAM2=My param 2
+MODPETTYCASH_MYPARAM2Tooltip=My param 2 tooltip
+
+
+#
+# About page
+#
+About = About
+PettyCashAbout = About PettyCash
+PettyCashAboutPage = PettyCash about page
+
+#
+# Sample page
+#
+PettyCashArea = Home PettyCash
+MyPageName = My page name
+
+#
+# Sample widget
+#
+MyWidget = My widget
+MyWidgetDescription = My widget description
+PettyCashSetup=Petty cash setup
+InitialAccount=Initial balance account
+DocumentPath=Path for documents
