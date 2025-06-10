@@ -796,7 +796,12 @@ if ($mysoc->useLocalTax(1)) {
 		$formcompany->select_localtax(1, $conf->global->MAIN_INFO_VALUE_LOCALTAX1, "lt1");
 	}
 
-	$options = array($langs->trans("CalcLocaltax1").' '.$langs->trans("CalcLocaltax1Desc"), $langs->trans("CalcLocaltax2").' - '.$langs->trans("CalcLocaltax2Desc"), $langs->trans("CalcLocaltax3").' - '.$langs->trans("CalcLocaltax3Desc"));
+    $options = array(
+        $langs->trans("CalcLocaltax1") . ' ' . $langs->trans("CalcLocaltax1Desc"),
+        $langs->trans("CalcLocaltax2") . ' - ' . $langs->trans("CalcLocaltax2Desc"),
+        $langs->trans("CalcLocaltax3") . ' - ' . $langs->trans("CalcLocaltax3Desc"),
+        $langs->trans("CalcLocaltax4") . ' - ' . $langs->trans("CalcLocaltax4Desc")
+    );
 
 	print '<br><label for="clt1">'.$langs->trans("CalcLocaltax").'</label>: ';
 	print $form->selectarray("clt1", $options, getDolGlobalString('MAIN_INFO_LOCALTAX_CALC1'));
@@ -840,7 +845,12 @@ if ($mysoc->useLocalTax(2)) {
 		$formcompany->select_localtax(2, (float) getDolGlobalString('MAIN_INFO_VALUE_LOCALTAX2'), "lt2");
 	}
 
-	$options = array($langs->trans("CalcLocaltax1").' '.$langs->trans("CalcLocaltax1Desc"), $langs->trans("CalcLocaltax2").' - '.$langs->trans("CalcLocaltax2Desc"), $langs->trans("CalcLocaltax3").' - '.$langs->trans("CalcLocaltax3Desc"));
+    $options = array(
+        $langs->trans("CalcLocaltax1") . ' ' . $langs->trans("CalcLocaltax1Desc"),
+        $langs->trans("CalcLocaltax2") . ' - ' . $langs->trans("CalcLocaltax2Desc"),
+        $langs->trans("CalcLocaltax3") . ' - ' . $langs->trans("CalcLocaltax3Desc"),
+        $langs->trans("CalcLocaltax4") . ' - ' . $langs->trans("CalcLocaltax4Desc")
+    );
 
 	print '<br><label for="clt2">'.$langs->trans("CalcLocaltax").'</label>: ';
 	print $form->selectarray("clt2", $options, getDolGlobalString('MAIN_INFO_LOCALTAX_CALC2'));
