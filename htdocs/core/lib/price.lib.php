@@ -37,6 +37,7 @@
  *										'4' : local tax apply on products including vat (localtax is calculated on amount + tax)
  *										'5' : local tax apply on services without vat (localtax is calculated on amount without tax)
  *										'6' : local tax apply on services including vat (localtax is calculated on amount + tax)
+ *                                                                             '7' : local tax included in price (localtax amount is extracted by division)
  *
  *		@param	float	$qty						Quantity
  * 		@param 	float	$pu                         Unit price (HT or TTC depending on price_base_type. TODO Add also mode 'INCT' when pu is price HT+VAT+LT1+LT2)
@@ -239,59 +240,86 @@ function calcul_price_total($qty, $pu, $remise_percent_ligne, $txtva, $uselocalt
 
 	$localtaxes = array(0, 0, 0);
 	$apply_tax = false;
-	switch ($localtax1_type) {
-		case '2':     // localtax on product or service
-			$apply_tax = true;
-			break;
-		case '4':     // localtax on product
-			if ($type == 0) {
-				$apply_tax = true;
-			}
-			break;
-		case '6':     // localtax on service
-			if ($type == 1) {
-				$apply_tax = true;
-			}
-			break;
-	}
+       switch ($localtax1_type) {
+               case '2':     // localtax on product or service
+                       $apply_tax = true;
+                       break;
+               case '4':     // localtax on product
+                       if ($type == 0) {
+                               $apply_tax = true;
+                       }
+                       break;
+               case '6':     // localtax on service
+                       if ($type == 1) {
+                               $apply_tax = true;
+                       }
+                       break;
+               case '7':     // localtax included in price
+                       $apply_tax = true;
+                       break;
+       }
 
-	if ($uselocaltax1_rate && $apply_tax) {
-		$result[14] = price2num(($tot_sans_remise_withvat * (1 + ($localtax1_rate / 100))) - $tot_sans_remise_withvat, 'MT');
-		$localtaxes[0] += $result[14];
+       if ($uselocaltax1_rate && $apply_tax) {
+               if ($localtax1_type == '7') {
+                       $result[14] = price2num(($tot_sans_remise_withvat / (1 - ($localtax1_rate / 100))) - $tot_sans_remise_withvat, 'MT');
+               } else {
+                       $result[14] = price2num(($tot_sans_remise_withvat * (1 + ($localtax1_rate / 100))) - $tot_sans_remise_withvat, 'MT');
+               }
+               $localtaxes[0] += $result[14];
+               if ($localtax1_type == '7') {
+                       $result[9] = price2num(($tot_avec_remise_withvat / (1 - ($localtax1_rate / 100))) - $tot_avec_remise_withvat, 'MT');
+               } else {
+                       $result[9] = price2num(($tot_avec_remise_withvat * (1 + ($localtax1_rate / 100))) - $tot_avec_remise_withvat, 'MT');
+               }
+               $localtaxes[1] += $result[9];
 
-		$result[9] = price2num(($tot_avec_remise_withvat * (1 + ($localtax1_rate / 100))) - $tot_avec_remise_withvat, 'MT');
-		$localtaxes[1] += $result[9];
-
-		$result[11] = price2num(($pu_withmainvat * (1 + ($localtax1_rate / 100))) - $pu_withmainvat, 'MU');
-		$localtaxes[2] += $result[11];
-	}
+               if ($localtax1_type == '7') {
+                       $result[11] = price2num(($pu_withmainvat / (1 - ($localtax1_rate / 100))) - $pu_withmainvat, 'MU');
+               } else {
+                       $result[11] = price2num(($pu_withmainvat * (1 + ($localtax1_rate / 100))) - $pu_withmainvat, 'MU');
+               }
+               $localtaxes[2] += $result[11];
+       }
 
 	$apply_tax = false;
-	switch ($localtax2_type) {
-		case '2':     // localtax on product or service
-			$apply_tax = true;
-			break;
-		case '4':     // localtax on product
-			if ($type == 0) {
-				$apply_tax = true;
-			}
-			break;
-		case '6':     // localtax on service
-			if ($type == 1) {
-				$apply_tax = true;
-			}
-			break;
-	}
-	if ($uselocaltax2_rate && $apply_tax) {
-		$result[15] = price2num(($tot_sans_remise_withvat * (1 + ($localtax2_rate / 100))) - $tot_sans_remise_withvat, 'MT');
-		$localtaxes[0] += $result[15];
-
-		$result[10] = price2num(($tot_avec_remise_withvat * (1 + ($localtax2_rate / 100))) - $tot_avec_remise_withvat, 'MT');
-		$localtaxes[1] += $result[10];
-
-		$result[12] = price2num(($pu_withmainvat * (1 + ($localtax2_rate / 100))) - $pu_withmainvat, 'MU');
-		$localtaxes[2] += $result[12];
-	}
+       switch ($localtax2_type) {
+               case '2':     // localtax on product or service
+                       $apply_tax = true;
+                       break;
+               case '4':     // localtax on product
+                       if ($type == 0) {
+                               $apply_tax = true;
+                       }
+                       break;
+               case '6':     // localtax on service
+                       if ($type == 1) {
+                               $apply_tax = true;
+                       }
+                       break;
+               case '7':     // localtax included in price
+                       $apply_tax = true;
+                       break;
+       }
+       if ($uselocaltax2_rate && $apply_tax) {
+               if ($localtax2_type == '7') {
+                       $result[15] = price2num(($tot_sans_remise_withvat / (1 - ($localtax2_rate / 100))) - $tot_sans_remise_withvat, 'MT');
+               } else {
+                       $result[15] = price2num(($tot_sans_remise_withvat * (1 + ($localtax2_rate / 100))) - $tot_sans_remise_withvat, 'MT');
+               }
+               $localtaxes[0] += $result[15];
+               if ($localtax2_type == '7') {
+                       $result[10] = price2num(($tot_avec_remise_withvat / (1 - ($localtax2_rate / 100))) - $tot_avec_remise_withvat, 'MT');
+               } else {
+                       $result[10] = price2num(($tot_avec_remise_withvat * (1 + ($localtax2_rate / 100))) - $tot_avec_remise_withvat, 'MT');
+               }
+               $localtaxes[1] += $result[10];
+               if ($localtax2_type == '7') {
+                       $result[12] = price2num(($pu_withmainvat / (1 - ($localtax2_rate / 100))) - $pu_withmainvat, 'MU');
+               } else {
+                       $result[12] = price2num(($pu_withmainvat * (1 + ($localtax2_rate / 100))) - $pu_withmainvat, 'MU');
+               }
+               $localtaxes[2] += $result[12];
+       }
 
 	//dol_syslog("price.lib::calcul_price_total $qty, $pu, $remise_percent_ligne, $txtva, $price_base_type $info_bits");
 	if ($price_base_type == 'HT') {
@@ -331,58 +359,88 @@ function calcul_price_total($qty, $pu, $remise_percent_ligne, $txtva, $uselocalt
 	// if there's some localtax without vat, we calculate localtaxes (we will add them at end)
 
 	$apply_tax = false;
-	switch ($localtax1_type) {
-		case '1':     // localtax on product or service
-			$apply_tax = true;
-			break;
-		case '3':     // localtax on product
-			if ($type == 0) {
-				$apply_tax = true;
-			}
-			break;
-		case '5':     // localtax on service
-			if ($type == 1) {
-				$apply_tax = true;
-			}
-			break;
-	}
-	if ($uselocaltax1_rate && $apply_tax) {
-		$result[14] = price2num(($tot_sans_remise_withoutvat * (1 + ($localtax1_rate / 100))) - $tot_sans_remise_withoutvat, 'MT'); // amount tax1 for total_ht_without_discount
-		$result[8] += $result[14]; // total_ttc_without_discount + tax1
+       switch ($localtax1_type) {
+               case '1':     // localtax on product or service
+                       $apply_tax = true;
+                       break;
+               case '3':     // localtax on product
+                       if ($type == 0) {
+                               $apply_tax = true;
+                       }
+                       break;
+               case '5':     // localtax on service
+                       if ($type == 1) {
+                               $apply_tax = true;
+                       }
+                       break;
+               case '7':     // localtax included in price
+                       $apply_tax = true;
+                       break;
+       }
+       if ($uselocaltax1_rate && $apply_tax) {
+               if ($localtax1_type == '7') {
+                       $result[14] = price2num(($tot_sans_remise_withoutvat / (1 - ($localtax1_rate / 100))) - $tot_sans_remise_withoutvat, 'MT');
+               } else {
+                       $result[14] = price2num(($tot_sans_remise_withoutvat * (1 + ($localtax1_rate / 100))) - $tot_sans_remise_withoutvat, 'MT'); // amount tax1 for total_ht_without_discount
+               }
+               $result[8] += $result[14]; // total_ttc_without_discount + tax1
 
-		$result[9] = price2num(($tot_avec_remise_withoutvat * (1 + ($localtax1_rate / 100))) - $tot_avec_remise_withoutvat, 'MT'); // amount tax1 for total_ht
-		$result[2] += $result[9]; // total_ttc + tax1
+               if ($localtax1_type == '7') {
+                       $result[9] = price2num(($tot_avec_remise_withoutvat / (1 - ($localtax1_rate / 100))) - $tot_avec_remise_withoutvat, 'MT');
+               } else {
+                       $result[9] = price2num(($tot_avec_remise_withoutvat * (1 + ($localtax1_rate / 100))) - $tot_avec_remise_withoutvat, 'MT'); // amount tax1 for total_ht
+               }
+               $result[2] += $result[9]; // total_ttc + tax1
 
-		$result[11] = price2num(($pu_withouttax * (1 + ($localtax1_rate / 100))) - $pu_withouttax, 'MU'); // amount tax1 for pu_ht
-		$result[5] += $result[11]; // pu_ht + tax1
-	}
+               if ($localtax1_type == '7') {
+                       $result[11] = price2num(($pu_withouttax / (1 - ($localtax1_rate / 100))) - $pu_withouttax, 'MU');
+               } else {
+                       $result[11] = price2num(($pu_withouttax * (1 + ($localtax1_rate / 100))) - $pu_withouttax, 'MU'); // amount tax1 for pu_ht
+               }
+               $result[5] += $result[11]; // pu_ht + tax1
+       }
 
 	$apply_tax = false;
-	switch ($localtax2_type) {
-		case '1':     // localtax on product or service
-			$apply_tax = true;
-			break;
-		case '3':     // localtax on product
-			if ($type == 0) {
-				$apply_tax = true;
-			}
-			break;
-		case '5':     // localtax on service
-			if ($type == 1) {
-				$apply_tax = true;
-			}
-			break;
-	}
-	if ($uselocaltax2_rate && $apply_tax) {
-		$result[15] = price2num(($tot_sans_remise_withoutvat * (1 + ($localtax2_rate / 100))) - $tot_sans_remise_withoutvat, 'MT'); // amount tax2 for total_ht_without_discount
-		$result[8] += $result[15]; // total_ttc_without_discount + tax2
+       switch ($localtax2_type) {
+               case '1':     // localtax on product or service
+                       $apply_tax = true;
+                       break;
+               case '3':     // localtax on product
+                       if ($type == 0) {
+                               $apply_tax = true;
+                       }
+                       break;
+               case '5':     // localtax on service
+                       if ($type == 1) {
+                               $apply_tax = true;
+                       }
+                       break;
+               case '7':     // localtax included in price
+                       $apply_tax = true;
+                       break;
+       }
+       if ($uselocaltax2_rate && $apply_tax) {
+               if ($localtax2_type == '7') {
+                       $result[15] = price2num(($tot_sans_remise_withoutvat / (1 - ($localtax2_rate / 100))) - $tot_sans_remise_withoutvat, 'MT');
+               } else {
+                       $result[15] = price2num(($tot_sans_remise_withoutvat * (1 + ($localtax2_rate / 100))) - $tot_sans_remise_withoutvat, 'MT'); // amount tax2 for total_ht_without_discount
+               }
+               $result[8] += $result[15]; // total_ttc_without_discount + tax2
 
-		$result[10] = price2num(($tot_avec_remise_withoutvat * (1 + ($localtax2_rate / 100))) - $tot_avec_remise_withoutvat, 'MT'); // amount tax2 for total_ht
-		$result[2] += $result[10]; // total_ttc + tax2
+               if ($localtax2_type == '7') {
+                       $result[10] = price2num(($tot_avec_remise_withoutvat / (1 - ($localtax2_rate / 100))) - $tot_avec_remise_withoutvat, 'MT');
+               } else {
+                       $result[10] = price2num(($tot_avec_remise_withoutvat * (1 + ($localtax2_rate / 100))) - $tot_avec_remise_withoutvat, 'MT'); // amount tax2 for total_ht
+               }
+               $result[2] += $result[10]; // total_ttc + tax2
 
-		$result[12] = price2num(($pu_withouttax * (1 + ($localtax2_rate / 100))) - $pu_withouttax, 'MU'); // amount tax2 for pu_ht
-		$result[5] += $result[12]; // pu_ht + tax2
-	}
+               if ($localtax2_type == '7') {
+                       $result[12] = price2num(($pu_withouttax / (1 - ($localtax2_rate / 100))) - $pu_withouttax, 'MU');
+               } else {
+                       $result[12] = price2num(($pu_withouttax * (1 + ($localtax2_rate / 100))) - $pu_withouttax, 'MU'); // amount tax2 for pu_ht
+               }
+               $result[5] += $result[12]; // pu_ht + tax2
+       }
 
 	// If rounding is not using base 10 (rare)
 	if (getDolGlobalString('MAIN_ROUNDING_RULE_TOT')) {

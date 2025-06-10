@@ -205,6 +205,7 @@ See the [ChangeLog](https://github.com/Dolibarr/dolibarr/blob/develop/ChangeLog)
   - Argentina invoice numbering using A,B,C...
   - Greece fetch customer vat details from AADE, all invoice types, MyData(external free module)
   - ZATCA e-invoicing QR-Code
+  - Support for division-based local tax type to handle prices that already include local taxes
   - Compatible with [European directives](https://europa.eu/legislation_summaries/taxation/l31057_en.htm) (2006/112/CE ... 2010/45/UE)
   - Compatible with data privacy rules (Europe's GDPR, ...)
   - ...
