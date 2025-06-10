@@ -161,7 +161,7 @@ $fsearch .= '<input type="text" name="min" id="min" value="'.$min.'" size="6">';
 $calc = getDolGlobalString('MAIN_INFO_LOCALTAX_CALC').$local;
 // Affiche en-tete du rapport
 $description = '';
-if ($calc == 0 || $calc == 1) {	// Calculate on invoice for goods and services
+if ($calc == 0 || $calc == 1 || $calc == 3) {	// Calculate on invoice for goods and services
 	$calcmode = $calc == 0 ? $langs->trans("CalcModeLT".$local) : $langs->trans("CalcModeLT".$local."Rec");
 	$calcmode .= ' <span class="opacitymedium">('.$langs->trans("TaxModuleSetupToModifyRulesLT", DOL_URL_ROOT.'/admin/company.php').')</span>';
 	$period = $form->selectDate($date_start, 'date_start', 0, 0, 0, '', 1, 0).' - '.$form->selectDate($date_end, 'date_end', 0, 0, 0, '', 1, 0);
@@ -178,6 +178,24 @@ if ($calc == 0 || $calc == 1) {	// Calculate on invoice for goods and services
 	$elementsup = $langs->trans("SuppliersInvoices");
 	$productsup = $langs->trans("Description");
 	$amountsup = $langs->trans("AmountHT");
+}
+if ($calc == 3) {
+        $calcmode = $langs->trans("CalcModeLT".$local."Div");
+        $calcmode .= ' <span class="opacitymedium">('.$langs->trans("TaxModuleSetupToModifyRulesLT", DOL_URL_ROOT.'/admin/company.php').')</span>';
+        $period = $form->selectDate($date_start, 'date_start', 0, 0, 0, '', 1, 0).' - '.$form->selectDate($date_end, 'date_end', 0, 0, 0, '', 1, 0);
+        if (isModEnabled('comptabilite')) {
+                $description .= '<br>'.$langs->trans("WarningDepositsNotIncluded");
+        }
+        $description .= $fsearch;
+        $description .= ' <span class="opacitymedium">('.$langs->trans("TaxModuleSetupToModifyRulesLT", DOL_URL_ROOT.'/admin/company.php').')</span>';
+        $builddate = dol_now();
+
+        $elementcust = $langs->trans("CustomersInvoices");
+        $productcust = $langs->trans("Description");
+        $amountcust = $langs->trans("AmountHT");
+        $elementsup = $langs->trans("SuppliersInvoices");
+        $productsup = $langs->trans("Description");
+        $amountsup = $langs->trans("AmountHT");
 }
 if ($calc == 2) { 	// Invoice for goods, payment for services
 	$calcmode = $langs->trans("CalcModeLT2Debt");
@@ -213,7 +231,7 @@ $x_coll_sum = 0;  // Initialize value
 $x_paye_sum = 0;  // Initialize value
 
 // IRPF that the customer has retained me
-if ($calc == 0 || $calc == 2) {
+if ($calc == 0 || $calc == 2 || $calc == 3) {
 	print '<tr class="liste_titre">';
 	print '<td class="left">'.$langs->trans("Num").'</td>';
 	print '<td class="left">'.$langs->trans("Customer").'</td>';
@@ -285,7 +303,7 @@ if ($calc == 0 || $calc == 2) {
 }
 
 // IRPF I retained my supplier
-if ($calc == 0 || $calc == 1) {
+if ($calc == 0 || $calc == 1 || $calc == 3) {
 	print '<tr class="liste_titre">';
 	print '<td class="left">'.$langs->trans("Num")."</td>";
 	print '<td class="left">'.$langs->trans("Supplier")."</td>";
@@ -349,7 +367,7 @@ if ($calc == 0 || $calc == 1) {
 	}
 }
 
-if ($calc == 0) {
+if ($calc == 0 || $calc == 3) {
 	// Total to pay
 	print '<tr><td colspan="5"></td></tr>';
 

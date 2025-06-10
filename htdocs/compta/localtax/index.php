@@ -282,15 +282,15 @@ print load_fiche_titre($langs->transcountry($LTSummary, $mysoc->country_code), '
 print '<table class="noborder centpercent">';
 print '<tr class="liste_titre">';
 print '<td>'.$langs->trans("Year")."</td>";
-if ($CalcLT == 0) {
-	print '<td class="right">'.$langs->transcountry($LTCustomer, $mysoc->country_code).'</td>';
-	print '<td class="right">'.$langs->transcountry($LTSupplier, $mysoc->country_code).'</td>';
+if ($CalcLT == 0 || $CalcLT == 3) {
+        print '<td class="right">'.$langs->transcountry($LTCustomer, $mysoc->country_code).'</td>';
+        print '<td class="right">'.$langs->transcountry($LTSupplier, $mysoc->country_code).'</td>';
 }
 if ($CalcLT == 1) {
-	print '<td class="right">'.$langs->transcountry($LTSupplier, $mysoc->country_code).'</td><td></td>';
+        print '<td class="right">'.$langs->transcountry($LTSupplier, $mysoc->country_code).'</td><td></td>';
 }
 if ($CalcLT == 2) {
-	print '<td class="right">'.$langs->transcountry($LTCustomer, $mysoc->country_code).'</td><td></td>';
+        print '<td class="right">'.$langs->transcountry($LTCustomer, $mysoc->country_code).'</td><td></td>';
 }
 print '<td class="right">'.$langs->trans("TotalToPay").'</td>';
 print "<td>&nbsp;</td>\n";
@@ -488,11 +488,17 @@ while ((($y < $yend) || ($y == $yend && $m <= $mend)) && $mcursor < 1000) {	// $
 				}
 			}
 			//var_dump('type='.$type.' '.$fields['totalht'].' '.$ratiopaymentinvoice);
-			$temp_ht = (float) $fields['totalht'] * $ratiopaymentinvoice;
-			$temp_vat = $fields['localtax'.$localTaxType] * $ratiopaymentinvoice;
-			$subtot_coll_total_ht += $temp_ht;
-			$subtot_coll_vat      += $temp_vat;
-			$x_coll_sum           += $temp_vat;
+                       $temp_ht = (float) $fields['totalht'] * $ratiopaymentinvoice;
+                       if ($CalcLT == 3) {
+                               $ratevalue = (float) price2num($rate);
+                               $ttcpart = (float) $fields['dtotal_ttc'] * $ratiopaymentinvoice;
+                               $temp_vat = $ttcpart - ($ttcpart / (1 + ($ratevalue / 100)));
+                       } else {
+                               $temp_vat = $fields['localtax'.$localTaxType] * $ratiopaymentinvoice;
+                       }
+                       $subtot_coll_total_ht += $temp_ht;
+                       $subtot_coll_vat      += $temp_vat;
+                       $x_coll_sum           += $temp_vat;
 		}
 	}
 	print '<td class="nowrap right">'.price(price2num($x_coll_sum, 'MT')).'</td>';
@@ -528,11 +534,17 @@ while ((($y < $yend) || ($y == $yend && $m <= $mend)) && $mcursor < 1000) {	// $
 				}
 			}
 			//var_dump('type='.$type.' '.$fields['totalht'].' '.$ratiopaymentinvoice);
-			$temp_ht = (float) $fields['totalht'] * $ratiopaymentinvoice;
-			$temp_vat = $fields['localtax'.$localTaxType] * $ratiopaymentinvoice;
-			$subtot_paye_total_ht += $temp_ht;
-			$subtot_paye_vat      += $temp_vat;
-			$x_paye_sum           += $temp_vat;
+                       $temp_ht = (float) $fields['totalht'] * $ratiopaymentinvoice;
+                       if ($CalcLT == 3) {
+                               $ratevalue = (float) price2num($rate);
+                               $ttcpart = (float) $fields['dtotal_ttc'] * $ratiopaymentinvoice;
+                               $temp_vat = $ttcpart - ($ttcpart / (1 + ($ratevalue / 100)));
+                       } else {
+                               $temp_vat = $fields['localtax'.$localTaxType] * $ratiopaymentinvoice;
+                       }
+                       $subtot_paye_total_ht += $temp_ht;
+                       $subtot_paye_vat      += $temp_vat;
+                       $x_paye_sum           += $temp_vat;
 		}
 	}
 	print '<td class="nowrap right">'.price(price2num($x_paye_sum, 'MT')).'</td>';
