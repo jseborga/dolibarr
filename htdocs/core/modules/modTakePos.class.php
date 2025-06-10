@@ -199,12 +199,19 @@ class modTakePos extends DolibarrModules
 		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'editlines';
 
-		$r++;
-		$this->rights[$r][0] = 50153;
-		$this->rights[$r][1] = 'Edit ordered sales lines (useful only when option "Order printers" has been enabled). Allow to edit sales lines even after the order has been printed';
-		$this->rights[$r][2] = 'a';
-		$this->rights[$r][3] = 0;
-		$this->rights[$r][4] = 'editorderedlines';
+                $r++;
+                $this->rights[$r][0] = 50153;
+                $this->rights[$r][1] = 'Edit ordered sales lines (useful only when option "Order printers" has been enabled). Allow to edit sales lines even after the order has been printed';
+                $this->rights[$r][2] = 'a';
+                $this->rights[$r][3] = 0;
+                $this->rights[$r][4] = 'editorderedlines';
+
+                $r++;
+                $this->rights[$r][0] = 50154;
+                $this->rights[$r][1] = 'Perform cash control operations (open or close cash box)';
+                $this->rights[$r][2] = 'a';
+                $this->rights[$r][3] = 0;
+                $this->rights[$r][4] = 'cashcontrol';
 
 
 		// Main menu entries

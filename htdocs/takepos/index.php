@@ -1475,6 +1475,19 @@ if ($resql) {
         }
 }
 
+// Dedicated buttons to manage cash control on demand
+if ($user->hasRight('takepos', 'cashcontrol')) {
+    $menus[$r++] = array('title' => '<span class="fas fa-cash-register paddingrightonly"></span><div class="trunc">'.$langs->trans("OpenCashFence").'</div>', 'action' => 'ControlCashOpening();');
+    $lastrowid = 0;
+    $sql = "SELECT rowid FROM " . MAIN_DB_PREFIX . "pos_cash_fence WHERE entity = " . ((int) $conf->entity) . " AND posnumber = " . ((int) empty($_SESSION["takeposterminal"]) ? 0 : $_SESSION["takeposterminal"]) . " AND status = 0 ORDER BY date_creation DESC";
+    $resql = $db->query($sql);
+    if ($resql) {
+        $obj = $db->fetch_object($resql);
+        if ($obj) $lastrowid = $obj->rowid;
+    }
+    $menus[$r++] = array('title' => '<span class="fas fa-cash-register paddingrightonly"></span><div class="trunc">'.$langs->trans("CloseCashFence").'</div>', 'action' => 'CloseCashFence(' . ((int) $lastrowid) . ');');
+}
+
 if (getDolGlobalInt('TAKEPOS_AUTO_ORDER')) {
         $menus[$r++] = array('title' => '<span class="fa fa-list paddingrightonly"></span><div class="trunc">'.$langs->trans("PendingOrders").'</div>', 'action' => 'PendingOrders();');
 }
